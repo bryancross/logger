@@ -1,0 +1,24 @@
+{
+  "name": "logger",
+  "version": "1.0.0",
+  "description": "Simple logger experiment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryancross/logger.git"
+  },
+  "author": "brkc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bryancross/logger/issues"
+  },
+  "homepage": "https://github.com/bryancross/logger#readme",
+  "dependencies": {
+    "date-fns": "^1.29.0",
+    "fs": "0.0.1-security",
+    "json-path-processor": "^0.2.5"
+  }
+}

@@ -3,7 +3,7 @@
  */
 'use strict';
 const fs = require('fs');
-const jsonComparer = require('../lib/json-compare');
+//const jsonComparer = require('../lib/json-compare');
 const format = require('date-fns/format');  // https://github.com/date-fns/date-fns
 const Columnizer = require('./columnizer.js');
 //const extend = require('util')._extend;
@@ -16,6 +16,8 @@ const logModes = {
 const defConfig = {"syslogPath": "./log/rest-listener.log",
 							"logPath": "./log/",
 							"name":"syslog",
+							"console":true,
+							"logfile":true,
 							"columnSpec": {cols: [30, 40,15, 30, 50, 50], padding: 10, prefix:"SYSLOG: "},
 							"color":"\x1b[36m",
 							"mode":"log"};
@@ -138,60 +140,6 @@ Logger.prototype.log = function (msg, execPoint, status, error) {
 };
 
 
-Logger.prototype.append = function(objToAppend)
-{
-	//this.logData = extend(this.logData, objToAppend);
-	this.logData = Object.assign(this.logData, objToAppend);
-};
-
-Logger.prototype.prepend = function(objsToPrepend, key)
-{
-	var newLogData = {};
-	var prependedData = {};
-	var origLogData = JSON.parse(JSON.stringify(this.logData));
-	for(i = 0;i < objsToPrepend.length;i++)
-	{
-		//prependedData = extend(prependedData, objsToPrepend[i])
-		prependedData = Object.assign(prependedData, objsToPrepend[i]);
-    }
-    newLogData[key]=prependedData;
-
-	//this.logData = extend(newLogData, this.logData);
-	this.logData = Object.assign(newLogData, this.logData);
-
-};
-
-Logger.prototype.getLog = function(pathsToRedact, redactPhrase)
-{
-    if(!pathsToRedact)
-	{
-		return this.logData;
-	}
-	var data = this.logData;
-	    for(var i = 0;i < pathsToRedact.length;i++)
-        {
-            jpp(data).set(pathsToRedact[i], redactPhrase);
-        }
-    return data;
-};
-
-Logger.prototype.endlog = function (path, pathsToRedact, redactPhrase) {
-	this.flushToFile(path, pathsToRedact,redactPhrase);
-};
-
-Logger.prototype.flushToFile = function(path, pathsToRedact, redactPhrase)
-{
-    var logContent = JSON.stringify(this.getLog(pathsToRedact, redactPhrase));
-
-    fs.writeFile(this.logConfig.logPath, logContent, err => {
-        if (err) {
-            // Console.log("Error writing job log to file: " + err)
-            const e = {message: 'Error writing job log to file' + err};
-            throw (e);
-        }
-    });
-};
-
 Logger.prototype.syslog = function (msg, execPoint, status, error) {
     if(!msg == 'undefined')
     {
@@ -208,22 +156,6 @@ Logger.prototype.syslog = function (msg, execPoint, status, error) {
 								  : datestamp + "\t" + status + "\t" + execPoint + "\t" + msg + "\t" + (error ? error.message : ""));
    console.log((this.logConfig.color ? this.logConfig.color : '') + logString);
    this.writeToFile(this.logConfig.syslogPath, logString);
-
-   /*		
-   if (fs.existsSync(this.logConfig.syslogPath)) {
-		fs.appendFile(this.logConfig.syslogPath, '\n' + logString, err => {
-			if (err) {
-				console.log('Error appending to SYSLOG: ' + err);
-			}
-		});
-	} else {
-		fs.writeFile(this.logConfig.syslogPath, logString, err => {
-			if (err) {
-				console.log('Error writing to SYSLOG: ' + err);
-			}
-		});
-	}
-	*/
 };
 
 Logger.prototype.writeToFile = function (path, outputString) {
